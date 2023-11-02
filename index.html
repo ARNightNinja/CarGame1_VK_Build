@@ -24,7 +24,6 @@
                 bottom: 0px;
                 width: 100%;
                 height: 90px;
-                display: none;
             }
             #loading-overlay {
                 font-size: 20px;
@@ -51,13 +50,13 @@
                 border-radius: 3px;
                 width: 0%;
                 height: 100%;
-                background: #FF9A00;
+                background: #FFFFFF;
             }
         </style>
     </head>
     <body>
         <canvas id="canvas" class="fullscreen"></canvas>
-        <div id="banner-container"></div>
+        <div id="banner-container" style="display: none"></div>
         <div id="loading-overlay" class="fullscreen">
             <img id="icon" src="./icon.png" />
             <div id="progress-bar"><div id="progress-bar-fill"></div></div>
@@ -147,15 +146,19 @@
                     bridge.advertisement.on('rewarded_state_changed', state => sendMessageToUnity('OnRewardedStateChanged', state))
                     bridge.game.on('visibility_state_changed', state => sendMessageToUnity('OnVisibilityStateChanged', state))
 
+                    if (bridge.platform.id === bridge.PLATFORM_ID.YANDEX || bridge.platform.id === bridge.PLATFORM_ID.GAME_DISTRIBUTION) {
+                        bridge.advertisement.showInterstitial()
+                    }
+
                     let unityLoader = document.createElement('script')
                     unityLoader.src = 'Build/CarGame1.loader.js'
                     unityLoader.onload = () => {
                         createUnityInstance(
                             canvas,
                             {
-                                dataUrl: 'Build/85fd8bb9112a639bfdc46f543729fd71.data.unityweb',
-                                frameworkUrl: 'Build/d5add6316622b2bb537edb41a8a5b49f.js.unityweb',
-                                codeUrl: 'Build/9d1ccd63f13d3f5b8900fbd63608e871.wasm.unityweb',
+                                dataUrl: 'Build/be254d9d10f090d5550558581d93c881.data.unityweb',
+                                frameworkUrl: 'Build/948b1236f975417dc2fb9e524b4bc523.js.unityweb',
+                                codeUrl: 'Build/ae6f936641c07e28209e9a6358191f1a.wasm.unityweb',
                                 streamingAssetsUrl: 'StreamingAssets',
                                 companyName: 'DefaultCompany',
                                 productName: 'CarGame1',
@@ -353,6 +356,14 @@
 
 
             // advertisement
+            window.getInterstitialState = function() {
+                if (bridge.advertisement.interstitialState) {
+                    return bridge.advertisement.interstitialState
+                } else {
+                    return ''
+                }
+            }
+
             window.getIsBannerSupported = function() {
                 return bridge.advertisement.isBannerSupported.toString()
             }
@@ -362,7 +373,13 @@
             }
 
             window.setMinimumDelayBetweenInterstitial = function(options) {
-                bridge.advertisement.setMinimumDelayBetweenInterstitial(JSON.parse(options))
+                if (options) {
+                    options = JSON.parse(options)
+                } else {
+                    options = { }
+                }
+                
+                bridge.advertisement.setMinimumDelayBetweenInterstitial(options)
             }
 
             window.showBanner = function(options) {

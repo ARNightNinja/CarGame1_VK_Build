@@ -1360,24 +1360,26 @@
 							if (this._isInitialized) return Promise.resolve();
 							var t = this._getPromiseDecorator(h);
 							return t || (t = this._createPromiseDecorator(h), x("https://yandex.ru/games/sdk/v2").then((function() {
-								window.YaGames.init().then((function(t) {
-									e._platformSdk = t;
-									var r = Pe(e, Ie, Re).call(e),
-										n = e._platformSdk.getStorage().then((function(t) {
-											e._localStorage = t
-										})),
-										o = e._platformSdk.shortcut.canShowPrompt().then((function(t) {
-											Ee(e, Ae, t.canShow)
-										})),
-										i = e._platformSdk.getLeaderboards().then((function(t) {
-											Ee(e, Te, t)
+								console.log("Wait 1 sec"), e.delay(1e3).then((function() {
+									window.YaGames.init().then((function(t) {
+										e._platformSdk = t;
+										var r = Pe(e, Ie, Re).call(e),
+											n = e._platformSdk.getStorage().then((function(t) {
+												e._localStorage = t
+											})),
+											o = e._platformSdk.shortcut.canShowPrompt().then((function(t) {
+												Ee(e, Ae, t.canShow)
+											})),
+											i = e._platformSdk.getLeaderboards().then((function(t) {
+												Ee(e, Te, t)
+											}));
+										e._isBannerSupported = !0;
+										var a = e._platformSdk.adv.getBannerAdvStatus().then((function(t) {
+											t.stickyAdvIsShowing && e._setBannerState(c.SHOWN)
 										}));
-									e._isBannerSupported = !0;
-									var a = e._platformSdk.adv.getBannerAdvStatus().then((function(t) {
-										t.stickyAdvIsShowing && e._setBannerState(c.SHOWN)
-									}));
-									Promise.all([r, n, o, i, a]).finally((function() {
-										e._isInitialized = !0, e._defaultStorageType = e._isPlayerAuthorized ? l.PLATFORM_INTERNAL : l.LOCAL_STORAGE, e._resolvePromiseDecorator(h)
+										Promise.all([r, n, o, i, a]).finally((function() {
+											e._isInitialized = !0, e._defaultStorageType = e._isPlayerAuthorized ? l.PLATFORM_INTERNAL : l.LOCAL_STORAGE, e._resolvePromiseDecorator(h)
+										}))
 									}))
 								}))
 							}))), t.promise
@@ -1388,7 +1390,14 @@
 							var t;
 							return e === p.GAME_READY ? (null === (t = this._platformSdk.features.LoadingAPI) || void 0 === t || t.ready(), Promise.resolve()) : ye(ge(b.prototype), "sendMessage", this).call(this, e)
 						}
-					}, {
+					},  {
+						key: "delay",
+						value: function(e) {
+						  return new Promise((function(t) {
+							return setTimeout(t, e)
+						  }))
+						}
+					},	{
 						key: "authorizePlayer",
 						value: function(e) {
 							var t = this,
